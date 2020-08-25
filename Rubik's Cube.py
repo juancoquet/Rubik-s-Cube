@@ -128,7 +128,7 @@ my_cube = Cube()
 ##################
 
 
-def build_vertices(x = 0, y = 3, z = 0):
+def build_vertices_front(x = 0, y = 3, z = 0):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -147,6 +147,128 @@ def build_vertices(x = 0, y = 3, z = 0):
             y += 1
         x -= 3
         y -= 1
+    return vertices
+
+def build_vertices_right(x = 3, y = 3, z = 0):
+    vertices = []
+    for row in range(3):
+        for tile in range(3):
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            y -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z -= 1
+            y += 1
+        z += 3
+        y -= 1
+    return vertices
+
+def build_vertices_left(x = 0, y = 3, z = -3):
+    vertices = []
+    for row in range(3):
+        for tile in range(3):
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            y -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z += 1
+            y += 1
+        z -= 3
+        y -= 1
+    return vertices
+
+def build_vertices_top(x = 0, y = 3, z = -3):
+    vertices = []
+    for row in range(3):
+        for tile in range(3):
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            z -= 1
+        x -= 3
+        z += 1
+    return vertices
+
+def build_vertices_bottom(x = 0, y = 0, z = 0):
+    vertices = []
+    for row in range(3):
+        for tile in range(3):
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            z -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            z += 1
+        x -= 3
+        z -= 1
+    return vertices
+
+def build_vertices_back(x = 3, y = 3, z = -3):
+    vertices = []
+    for row in range(3):
+        for tile in range(3):
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            y -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x -= 1
+            y += 1
+        x += 3
+        y -= 1
+    return vertices
+
+
+def build_vertices():
+    vertices = []
+    front = build_vertices_front()
+    right = build_vertices_right()
+    left = build_vertices_left()
+    top = build_vertices_top()
+    bottom = build_vertices_bottom()
+    back = build_vertices_back()
+    vertices += front
+    vertices += right
+    vertices += left
+    vertices += top
+    vertices += bottom
+    vertices += back
     return vertices
 
 def build_edges(vertices):
@@ -175,56 +297,33 @@ def build_faces(vertices):
     return faces
 
 
-vertices = build_vertices(0, 3, 0)
+vertices = build_vertices()
 
 edges = build_edges(vertices)
 
 faces = build_faces(vertices)
 
-# vertices = (
-#     # White face
-#     (0, 3, 0), (1, 3, 0), (1, 2, 0), (0, 2, 0),
-#     (1, 3, 0), (2, 3, 0), (2, 2, 0), (1, 2, 0),
-#     (2, 3, 0), (3, 3, 0), (3, 2, 0), (2, 2, 0),
 
-#     (0, 2, 0), (1, 2, 0), (1, 1, 0), (0, 1, 0),
-#     (1, 2, 0), (2, 2, 0), (2, 1, 0), (1, 1, 0),
-#     (2, 2, 0), (3, 2, 0), (3, 1, 0), (2, 1, 0),
-
-#     (0, 1, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0),
-#     (1, 1, 0), (2, 1, 0), (2, 0, 0), (1, 0, 0),
-#     (2, 1, 0), (3, 1, 0), (3, 0, 0), (2, 0, 0)
-# )
-
-
-# edges = (
-#     (0, 1), (0, 3), (1, 2), (2, 3),
-#     (4, 5), (4, 7), (5, 6), (6, 7),
-#     (8, 9), (8, 11), (9, 10), (10, 11),
-
-#     (12, 13), (12, 15), (13, 14), (14, 15),
-#     (16, 17), (16, 19), (17, 18), (18, 19),
-#     (20, 21), (20, 23), (21, 22), (22, 23),
-
-#     (24, 25), (24, 27), (25, 26), (26, 27),
-#     (28, 29), (28, 31), (29, 30), (30, 31),
-#     (32, 33), (32, 35), (33, 34), (34, 35)
-# )
-
-
-# faces = (
-#     (0, 1, 2, 3), (4, 5, 6, 7), (8, 9, 10, 11),
-#     (12, 13, 14, 15), (16, 17, 18, 19), (20, 21, 22, 23),
-#     (24, 25, 26, 27), (28, 29, 30, 31), (32, 33, 34, 35)
-# )
-
-colours = ((1, 1, 1), (0, 1, 0), (1, 0.5, 0), (0, 0, 1), (1, 0, 0), (1, 0, 1))
-three_colours = ((1, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0),
-                 (0, 0, 1), (0, 1, 0), (1, 0, 0), (0, 0, 1), (0, 1, 0))
+colours = ((1, 1, 1), (0, 1, 0), (1, 0.5, 0), (0, 0, 1), (1, 0, 0), (1, 0, 1), )
+three_colours = (
+    (0, 1, 0), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 0, 0),
+    (0, 1, 0), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (1, 0, 0),
+    (0, 1, 0), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (1, 0, 0),
+    (0, 1, 0), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (1, 0, 0),
+    (0, 1, 0), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (1, 0, 0),
+    (0, 1, 0), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0, 0),
+    )
 edge_colour = (0, 0, 0)
 
 
 def cube_display():
+    glBegin(GL_LINES)
+    for edge in edges:
+        glColor3fv(edge_colour)
+        for vertex in edge:
+            glVertex3fv(vertices[vertex])
+    glEnd()
+
     glBegin(GL_QUADS)
     x = 0
     for face in faces:
@@ -234,29 +333,23 @@ def cube_display():
             glVertex3fv(vertices[vertex])
     glEnd()
 
-    glBegin(GL_LINES)
-    for edge in edges:
-        glColor3fv(edge_colour)
-        for vertex in edge:
-            glVertex3fv(vertices[vertex])
-    glEnd()
-
-
 def main():
     pygame.init()
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
+    glEnable(GL_DEPTH_TEST)
     gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
     glTranslatef(-1.5, -1.5, -15)
     glRotatef(0, 0, 0, 0)
+    glClearColor(0, 0.1, 0.1, 1)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        glRotatef(1, 1, 1, 1)
+        glRotatef(1, 1, 1, 0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         cube_display()
         pygame.display.flip()
