@@ -1,5 +1,9 @@
 from collections import deque
 from random import randint
+import pygame
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
 
 class Cube:
@@ -25,7 +29,7 @@ class Cube:
         self.yellow_face = ['yellow' for tile in range(9)]
         print('Cube reset to solved state.')
 
-    # Rotation logic for tile local to selected face. Defined for later use within
+    # Rotation logic for tiles local to selected face. Defined for later use within
     # the full rotation algorithm.
 
     def local_rotate(self, face):
@@ -118,6 +122,145 @@ class Cube:
 
 
 my_cube = Cube()
-print(my_cube.white_face)
-my_cube.scramble()
-print(my_cube.white_face)
+
+##################
+# Making interface
+##################
+
+
+def build_vertices(x = 0, y = 3, z = 0):
+    vertices = []
+    for row in range(3):
+        for tile in range(3):
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            y -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x -= 1
+            current_vertex = [x, y, z]
+            vertices.append(current_vertex)
+            x += 1
+            y += 1
+        x -= 3
+        y -= 1
+    return vertices
+
+def build_edges(vertices):
+    vert_total = len(vertices)
+    i = 0
+    edges = []
+    while i < vert_total:
+        current_edge = [i, i+1]
+        edges.append(current_edge)
+        current_edge = [i, i+3]
+        edges.append(current_edge)
+        current_edge = [i+1, i+2]
+        edges.append(current_edge)
+        current_edge = [i+2, i+3]
+        edges.append(current_edge)
+        i += 4
+    return edges
+
+def build_faces(vertices):
+    vertex_list = list(range(len(vertices)))
+    faces = []
+    i = 0
+    while i < len(vertices):
+        faces.append(vertex_list[i:i+4])
+        i += 4
+    return faces
+
+
+vertices = build_vertices(0, 3, 0)
+
+edges = build_edges(vertices)
+
+faces = build_faces(vertices)
+
+# vertices = (
+#     # White face
+#     (0, 3, 0), (1, 3, 0), (1, 2, 0), (0, 2, 0),
+#     (1, 3, 0), (2, 3, 0), (2, 2, 0), (1, 2, 0),
+#     (2, 3, 0), (3, 3, 0), (3, 2, 0), (2, 2, 0),
+
+#     (0, 2, 0), (1, 2, 0), (1, 1, 0), (0, 1, 0),
+#     (1, 2, 0), (2, 2, 0), (2, 1, 0), (1, 1, 0),
+#     (2, 2, 0), (3, 2, 0), (3, 1, 0), (2, 1, 0),
+
+#     (0, 1, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0),
+#     (1, 1, 0), (2, 1, 0), (2, 0, 0), (1, 0, 0),
+#     (2, 1, 0), (3, 1, 0), (3, 0, 0), (2, 0, 0)
+# )
+
+
+# edges = (
+#     (0, 1), (0, 3), (1, 2), (2, 3),
+#     (4, 5), (4, 7), (5, 6), (6, 7),
+#     (8, 9), (8, 11), (9, 10), (10, 11),
+
+#     (12, 13), (12, 15), (13, 14), (14, 15),
+#     (16, 17), (16, 19), (17, 18), (18, 19),
+#     (20, 21), (20, 23), (21, 22), (22, 23),
+
+#     (24, 25), (24, 27), (25, 26), (26, 27),
+#     (28, 29), (28, 31), (29, 30), (30, 31),
+#     (32, 33), (32, 35), (33, 34), (34, 35)
+# )
+
+
+# faces = (
+#     (0, 1, 2, 3), (4, 5, 6, 7), (8, 9, 10, 11),
+#     (12, 13, 14, 15), (16, 17, 18, 19), (20, 21, 22, 23),
+#     (24, 25, 26, 27), (28, 29, 30, 31), (32, 33, 34, 35)
+# )
+
+colours = ((1, 1, 1), (0, 1, 0), (1, 0.5, 0), (0, 0, 1), (1, 0, 0), (1, 0, 1))
+three_colours = ((1, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0),
+                 (0, 0, 1), (0, 1, 0), (1, 0, 0), (0, 0, 1), (0, 1, 0))
+edge_colour = (0, 0, 0)
+
+
+def cube_display():
+    glBegin(GL_QUADS)
+    x = 0
+    for face in faces:
+        glColor3fv(three_colours[x])
+        x += 1
+        for vertex in face:
+            glVertex3fv(vertices[vertex])
+    glEnd()
+
+    glBegin(GL_LINES)
+    for edge in edges:
+        glColor3fv(edge_colour)
+        for vertex in edge:
+            glVertex3fv(vertices[vertex])
+    glEnd()
+
+
+def main():
+    pygame.init()
+    display = (800, 600)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+
+    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
+    glTranslatef(-1.5, -1.5, -15)
+    glRotatef(0, 0, 0, 0)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        glRotatef(1, 1, 1, 1)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        cube_display()
+        pygame.display.flip()
+        pygame.time.wait(10)
+
+
+main()
