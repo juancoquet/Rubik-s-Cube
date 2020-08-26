@@ -4,6 +4,10 @@ import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+import time
+import tkinter as tk
+from tkinter import *
+import os
 
 
 class Cube:
@@ -19,6 +23,10 @@ class Cube:
         self.yellow_face = ['yellow' for tile in range(9)]
         self.input_translator = {'white': self.white_face, 'green': self.green_face, 'orange': self.orange_face,
                                  'blue': self.blue_face, 'red': self.red_face, 'yellow': self.yellow_face}
+
+    def full_read(self):
+        read = self.white_face + self.blue_face + self.green_face + self.orange_face + self.red_face + self.yellow_face
+        return read
 
     def reset(self):
         self.white_face = ['white' for tile in range(9)]
@@ -75,6 +83,7 @@ class Cube:
                 8] = self.red_face[6], self.red_face[7], self.red_face[8], self.blue_face[8], self.blue_face[5], self.blue_face[2], self.orange_face[2], self.orange_face[1], self.orange_face[0], self.green_face[0], self.green_face[3], self.green_face[6]
         else:
             print('Please type one of the following options: \'white\', \'green\', \'orange\', \'blue\', \'red\' or \'yellow\'.')
+        return self.full_read
 
     def counter_rotate(self, face):
         # Rotating values local to this face.
@@ -128,7 +137,7 @@ my_cube = Cube()
 ##################
 
 
-def build_vertices_front(x = 0, y = 3, z = 0):
+def build_vertices_front(x = -1.5, y = 1.5, z = 1.5):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -149,7 +158,7 @@ def build_vertices_front(x = 0, y = 3, z = 0):
         y -= 1
     return vertices
 
-def build_vertices_right(x = 3, y = 3, z = 0):
+def build_vertices_right(x = 1.5, y = 1.5, z = 1.5):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -170,7 +179,7 @@ def build_vertices_right(x = 3, y = 3, z = 0):
         y -= 1
     return vertices
 
-def build_vertices_left(x = 0, y = 3, z = -3):
+def build_vertices_left(x = -1.5, y = 1.5, z = -1.5):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -191,7 +200,7 @@ def build_vertices_left(x = 0, y = 3, z = -3):
         y -= 1
     return vertices
 
-def build_vertices_top(x = 0, y = 3, z = -3):
+def build_vertices_top(x = -1.5, y = 1.5, z = -1.5):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -212,7 +221,7 @@ def build_vertices_top(x = 0, y = 3, z = -3):
         z += 1
     return vertices
 
-def build_vertices_bottom(x = 0, y = 0, z = 0):
+def build_vertices_bottom(x = -1.5, y = -1.5, z = 1.5):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -233,7 +242,7 @@ def build_vertices_bottom(x = 0, y = 0, z = 0):
         z -= 1
     return vertices
 
-def build_vertices_back(x = 3, y = 3, z = -3):
+def build_vertices_back(x = 1.5, y = 1.5, z = -1.5):
     vertices = []
     for row in range(3):
         for tile in range(3):
@@ -298,28 +307,23 @@ def build_faces(vertices):
 
 
 vertices = build_vertices()
-
 edges = build_edges(vertices)
-
 faces = build_faces(vertices)
 
+colour_dict = {
+    'white': (1, 1, 1),
+    'blue': (0, 0, 1),
+    'green': (0.168, 0.592, 0.286),
+    'orange': (0.984, 0.588, 0.054),
+    'red': (0.623, 0.164, 0.015),
+    'yellow': (1, 0.933, 0.2)
+    }
 
-colours = ((1, 1, 1), (0, 1, 0), (1, 0.5, 0), (0, 0, 1), (1, 0, 0), (1, 0, 1), )
-three_colours = (
-    (0, 1, 0), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 0, 0),
-    (0, 1, 0), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (1, 0, 0),
-    (0, 1, 0), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (0.168, 0.592, 0.286), (1, 0, 0),
-    (0, 1, 0), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (0.984, 0.588, 0.054), (1, 0, 0),
-    (0, 1, 0), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (0.623, 0.164, 0.015), (1, 0, 0),
-    (0, 1, 0), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0.933, 0.2), (1, 0, 0),
-    )
-edge_colour = (0, 0, 0)
-
-
-def cube_display():
+def cube_display(speed = 0, x_rotation = 0, y_rotation = 0):
+    colours = my_cube.full_read()
     glBegin(GL_LINES)
     for edge in edges:
-        glColor3fv(edge_colour)
+        glColor3fv((0, 0, 0))
         for vertex in edge:
             glVertex3fv(vertices[vertex])
     glEnd()
@@ -327,31 +331,102 @@ def cube_display():
     glBegin(GL_QUADS)
     x = 0
     for face in faces:
-        glColor3fv(three_colours[x])
+        glColor3fv(colour_dict[colours[x]])
         x += 1
         for vertex in face:
             glVertex3fv(vertices[vertex])
     glEnd()
 
+    glRotatef(speed, x_rotation, y_rotation, 0)
+
+
 def main():
     pygame.init()
     display = (800, 600)
-    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+    game_display = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
     glEnable(GL_DEPTH_TEST)
     gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(-1.5, -1.5, -15)
+    gluLookAt(0, 0, 15, 0, 0, 0, 0, 1, 0)
     glRotatef(0, 0, 0, 0)
     glClearColor(0, 0.1, 0.1, 1)
+
+    speed = 0
+    x_rotation = 0
+    y_rotation = 0
+
+    shift_pressed = False
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        glRotatef(1, 1, 1, 0)
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RSHIFT:
+                    shift_pressed = True
+                if event.key == pygame.K_LSHIFT:
+                    shift_pressed = True
+                if event.key == pygame.K_SPACE:
+                    my_cube.scramble()
+                if event.key == pygame.K_0:
+                    my_cube.reset()
+                if event.key == pygame.K_LEFT:
+                    y_rotation = 1
+                    speed = 5
+                if event.key == pygame.K_RIGHT:
+                    y_rotation = -1
+                    speed = 5
+                if event.key == pygame.K_DOWN:
+                    x_rotation = -1
+                    speed = 5
+                if event.key == pygame.K_UP:
+                    x_rotation = 1
+                    speed = 5
+
+                if not shift_pressed:
+                    if event.key == pygame.K_w:
+                        my_cube.rotate('white')
+                    if event.key == pygame.K_b:
+                        my_cube.rotate('blue')
+                    if event.key == pygame.K_g:
+                        my_cube.rotate('green')
+                    if event.key == pygame.K_o:
+                        my_cube.rotate('orange')
+                    if event.key == pygame.K_r:
+                        my_cube.rotate('red')
+                    if event.key == pygame.K_y:
+                        my_cube.rotate('yellow')
+                elif shift_pressed:
+                    if event.key == pygame.K_w:
+                        my_cube.counter_rotate('white')
+                    if event.key == pygame.K_b:
+                        my_cube.counter_rotate('blue')
+                    if event.key == pygame.K_g:
+                        my_cube.counter_rotate('green')
+                    if event.key == pygame.K_o:
+                        my_cube.counter_rotate('orange')
+                    if event.key == pygame.K_r:
+                        my_cube.counter_rotate('red')
+                    if event.key == pygame.K_y:
+                        my_cube.counter_rotate('yellow')
+
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_RSHIFT:
+                    shift_pressed = False
+                if event.key == pygame.K_LSHIFT:
+                    shift_pressed = False
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    x_rotation = 0
+                    speed = 0
+                if event.key == pygame.K_DOWN or event.key == pygame.K_UP:
+                    y_rotation = 0
+                    speed = 0
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        cube_display()
+        cube_display(speed, x_rotation, y_rotation)
         pygame.display.flip()
         pygame.time.wait(10)
 
